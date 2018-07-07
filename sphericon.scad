@@ -1,31 +1,64 @@
 RADIUS = 40;
+APEX_RADIUS = 5;
+OFFSET = 0;
 SIDES  = 6;
+
+
+function extent() = RADIUS + APEX_RADIUS + OFFSET;
 
 module positive_x_plane(){
     polygon([
-        [0, -RADIUS],
-        [0, RADIUS],
-        [RADIUS, RADIUS],
-        [RADIUS, -RADIUS]
+        [0, -extent()],
+        [0, extent()],
+        [extent(), extent()],
+        [extent(), -extent()]
     ]);
 }
 
+
 module negative_x_space(){
-    translate([-RADIUS/2, 0, 0])
-        cube([RADIUS, RADIUS*2, RADIUS*2], true);
+    translate([-extent()/2, 0, 0])
+        cube([extent(), extent()*2, extent()*2], true);
 }
 
 module positive_x_space(){
     mirror([1, 0, 0]) negative_x_space();
 }
 
-module base_shape(){
-    rotate_extrude($fn = 120)
+module base_shape_2d(){
     intersection(){
-        circle(r = RADIUS, $fn = SIDES);
+        difference(){
+            offset(r = OFFSET)
+            union(){
+                circle(r = RADIUS, $fn = SIDES);
+                for(i = [0:SIDES]){
+                    rotate([0, 0, (360/SIDES) * i])
+                    translate([RADIUS, 0])
+                    circle(r = APEX_RADIUS, $fn = 50);
+                }
+            }
+            
+            for(i = [0:SIDES]){
+                rotate([0, 0, (360/SIDES) * i])
+                translate(
+                    [0, cos(360/SIDES/2) * RADIUS + OFFSET]
+                )
+                scale([1, 0.5])
+                circle(
+                    r = sin(360 / SIDES / 2) * RADIUS - OFFSET - APEX_RADIUS);
+            }
+        }
+
         positive_x_plane();
     }
 }
+
+module base_shape(){
+    rotate_extrude($fn = 120)
+    base_shape_2d();
+}
+
+//base_shape_2d();
 
 module sphericon(){
     // the part of the shape in negative x space
@@ -44,4 +77,12 @@ module sphericon(){
     }
 }
 
+module print(){
+    intersection(){
+        base_shape();
+        negative_x_space();
+    }
+}    
+
+//print();
 sphericon();
