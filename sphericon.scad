@@ -1,10 +1,12 @@
 RADIUS = 40;
-APEX_RADIUS = 5;
+VERTEX_RADIUS = 5;
 OFFSET = 0;
 SIDES  = 6;
+INDENT = true;
+VERTEX_CIRCLES = true;
 
 
-function extent() = RADIUS + APEX_RADIUS + OFFSET;
+function extent() = RADIUS + VERTEX_RADIUS + OFFSET;
 
 module positive_x_plane(){
     polygon([
@@ -31,21 +33,25 @@ module base_shape_2d(){
             offset(r = OFFSET)
             union(){
                 circle(r = RADIUS, $fn = SIDES);
-                for(i = [0:SIDES]){
-                    rotate([0, 0, (360/SIDES) * i])
-                    translate([RADIUS, 0])
-                    circle(r = APEX_RADIUS, $fn = 50);
+                if(VERTEX_CIRCLES == true){
+                    for(i = [0:SIDES]){
+                        rotate([0, 0, (360/SIDES) * i])
+                        translate([RADIUS, 0])
+                        circle(r = VERTEX_RADIUS, $fn = 50);
+                    }
                 }
             }
             
-            for(i = [0:SIDES]){
-                rotate([0, 0, (360/SIDES) * i])
-                translate(
-                    [0, cos(360/SIDES/2) * RADIUS + OFFSET]
-                )
-                scale([1, 0.5])
-                circle(
-                    r = sin(360 / SIDES / 2) * RADIUS - OFFSET - APEX_RADIUS);
+            if(INDENT == true){
+                for(i = [0:SIDES]){
+                    rotate([0, 0, (360/SIDES) * i])
+                    translate(
+                        [0, cos(360/SIDES/2) * RADIUS + OFFSET]
+                    )
+                    scale([1, 0.5])
+                    circle(
+                        r = sin(360 / SIDES / 2) * RADIUS - OFFSET - VERTEX_RADIUS);
+                }
             }
         }
 
