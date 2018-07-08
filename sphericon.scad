@@ -31,6 +31,7 @@ module base_shape_2d(){
     intersection(){
         difference(){
             offset(r = OFFSET)
+            rotate([0, 0, 360/SIDES/2])
             union(){
                 circle(r = RADIUS, $fn = SIDES);
                 if(VERTEX_CIRCLES == true){
@@ -44,7 +45,7 @@ module base_shape_2d(){
             
             if(INDENT == true){
                 for(i = [0:SIDES]){
-                    rotate([0, 0, (360/SIDES) * i])
+                    rotate([0, 0, (360/SIDES) * i + (360/SIDES/2)])
                     translate(
                         [0, cos(360/SIDES/2) * RADIUS + OFFSET]
                     )
@@ -66,6 +67,7 @@ module base_shape(){
 
 //base_shape_2d();
 
+//base_shape();
 module sphericon(){
     // the part of the shape in negative x space
     // remains unchanged.
